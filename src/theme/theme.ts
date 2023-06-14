@@ -3,10 +3,13 @@ import { createTheme } from '@mui/material';
 const theme = createTheme({
   palette: {
     primary: { main: 'rgb(0,155,196)' },
-    secondary: { main: 'rgb(0,155,196)' },
+    secondary: { main: '#0A2540' },
   },
   typography: {
     fontFamily: ['Poppins', 'Lato', 'Roboto'].join(','),
+    h4: {
+      fontWeight: 500,
+    },
   },
   components: {
     MuiButton: {
