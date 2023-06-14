@@ -1,9 +1,9 @@
 import './App.css';
-import { QueryClient, QueryClientProvider } from 'react-query';
 import Routing from './routes';
 import { ThemeProvider } from '@mui/material';
 import theme from './theme/theme';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 function App() {
   return (
