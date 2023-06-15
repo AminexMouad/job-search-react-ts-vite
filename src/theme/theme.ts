@@ -10,6 +10,9 @@ const theme = createTheme({
     h4: {
       fontWeight: 500,
     },
+    body1: {
+      color: '#808080',
+    },
   },
   components: {
     MuiButton: {
