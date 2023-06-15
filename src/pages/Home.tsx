@@ -1,5 +1,4 @@
 import React from 'react';
-import Header from '../components/Header';
 import { Box, Container, SxProps } from '@mui/material';
 import JobItem from '../components/JobItem';
 import useJobs from '../hooks/useJobs';
@@ -11,7 +10,6 @@ const HomePage: React.FC = () => {
 
   return (
     <div>
-      <Header />
       <Container>
         {isLoadingJobList ? (
           <Loader />

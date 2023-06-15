@@ -3,7 +3,6 @@ import { IAppState } from '../interfaces/stores/appStore.interface';
 import IAction, {
   IDispatchContext,
 } from '../interfaces/stores/action.interface';
-import useCheckConnectionState from '../hooks/useCheckConnectionState';
 
 const initialState: IAppState = {
   isAppOnline: true,
@@ -33,8 +32,6 @@ interface IAppProviderProps {
 
 const AppProvider: React.FC<IAppProviderProps> = ({ children }) => {
   const [state, dispatch] = useReducer(appReducer, initialState);
-
-  useCheckConnectionState();
 
   return (
     <AppStateContext.Provider value={state}>
