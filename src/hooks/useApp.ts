@@ -7,10 +7,10 @@ const useAppState = () => {
   return state;
 };
 
-const useAppStateDispatch = () => {
+const useAppDispatch = () => {
   const { dispatch } = useContext(AppDispatchContext);
 
   return dispatch;
 };
 
-export { useAppState, useAppStateDispatch };
+export { useAppState, useAppDispatch };

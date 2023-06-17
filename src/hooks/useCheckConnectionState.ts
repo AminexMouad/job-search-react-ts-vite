@@ -1,8 +1,8 @@
 import { useEffect } from 'react';
-import { useAppStateDispatch } from './useApp';
+import { useAppDispatch } from './useApp';
 
 const useCheckConnectionState = () => {
-  const dispatch = useAppStateDispatch();
+  const dispatch = useAppDispatch();
   const onlineHandler = () => {
     dispatch({
       type: 'SET_STATE',

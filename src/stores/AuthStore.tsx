@@ -22,6 +22,12 @@ const authReducer = (state: IAuthState, action: IAction): IAuthState => {
         ...action.payload,
       };
 
+    case 'SET_STATE_FROM_STORAGE':
+      return {
+        ...state,
+        isAuthenticated: true,
+      };
+
     case 'CLEAR_STATE':
       clearStorage();
       return initialState;

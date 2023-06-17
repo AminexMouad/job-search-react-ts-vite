@@ -6,6 +6,7 @@ import IAction, {
 
 const initialState: IAppState = {
   isAppOnline: true,
+  dataRetrievedFromStorage: false,
 };
 
 const AppStateContext = createContext(initialState);
