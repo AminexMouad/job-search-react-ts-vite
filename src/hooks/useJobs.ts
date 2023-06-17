@@ -4,18 +4,22 @@ import { QueryKeys } from '../enums/react-query.enum';
 import { useQuery } from '@tanstack/react-query';
 import { IHttpResponse } from '../interfaces/httpResponse.interface';
 import { useState } from 'react';
+import { getItem } from '../utils/storage';
 
 const fetchJobs = async ({ page }: { page: number }) => {
+  const credentials: { apiKey: string; broadKey: string } =
+    getItem('api_credentials');
+
   const res = await axios.get('https://api.hrflow.ai/v1/jobs/searching', {
     params: {
-      board_keys: `["887595b735d68f0bc0b0b0535f7d8f7d158a3f4e"]`,
+      board_keys: `["${credentials.broadKey}"]`,
       limit: 10,
       order_by: 'desc',
       page: page,
     },
 
     headers: {
-      'X-API-KEY': 'askr_dbfb6f33e7d3c6b6e334b2d420f81465',
+      'X-API-KEY': credentials.apiKey,
     },
   });
 

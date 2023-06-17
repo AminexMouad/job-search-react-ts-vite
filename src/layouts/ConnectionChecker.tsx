@@ -6,20 +6,26 @@ import useCheckConnectionState from '../hooks/useCheckConnectionState';
 import OfflineAlert from '../components/OfflineAlert';
 import { Box, SxProps } from '@mui/material';
 import Header from '../components/Header';
+import { Outlet } from 'react-router-dom';
 
 interface ConnectionCheckerProps {
-  children: React.ReactNode;
+  showHeader?: boolean;
 }
 
-const ConnectionChecker: React.FC<ConnectionCheckerProps> = ({ children }) => {
+const ConnectionChecker: React.FC<ConnectionCheckerProps> = ({
+  showHeader = true,
+}) => {
   useCheckConnectionState();
   const { isAppOnline } = useAppState();
 
   return (
     <Box sx={styles.container}>
       {!isAppOnline && <OfflineAlert />}
-      <Header />
-      <Box sx={styles.content}>{children}</Box>
+      {showHeader && <Header />}
+
+      <Box sx={styles.content}>
+        <Outlet />
+      </Box>
     </Box>
   );
 };

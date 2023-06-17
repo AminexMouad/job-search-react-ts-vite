@@ -1,8 +1,41 @@
+import { API_KEY, BROAD_KEY } from './../config/env';
 import { useContext } from 'react';
 import { AuthDispatchContext, AuthStateContext } from '../stores/AuthStore';
+import { useMutation } from '@tanstack/react-query';
+import { setItem } from '../utils/storage';
+
+export type LoginBody = {
+  broadKey: string;
+  apiKey: string;
+};
+
+const loginUser = ({ broadKey, apiKey }: LoginBody) => {
+  return new Promise((resolve, reject) => {
+    if (API_KEY !== apiKey || BROAD_KEY !== broadKey) {
+      reject(new Error('Credentials are incorrect'));
+    } else {
+      resolve({ apiKey, broadKey });
+    }
+  });
+};
 
 const useAuth = () => {
-  return {};
+  const authDispatch = useAuthDispatch();
+  const loginMutation = useMutation(loginUser, {
+    onSuccess: (data: LoginBody) => {
+      setItem('api_credentials', {
+        ...data,
+      });
+      authDispatch({
+        type: 'SET_STATE',
+        payload: {
+          isAuthenticated: true,
+        },
+      });
+    },
+  });
+
+  return { loginMutation };
 };
 
 const useAuthState = () => {
@@ -17,4 +50,4 @@ const useAuthDispatch = () => {
   return dispatch;
 };
 
-export default { useAuth, useAuthState, useAuthDispatch };
+export { useAuth, useAuthState, useAuthDispatch };
