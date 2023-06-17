@@ -3,6 +3,7 @@ import { useContext } from 'react';
 import { AuthDispatchContext, AuthStateContext } from '../stores/AuthStore';
 import { useMutation } from '@tanstack/react-query';
 import { setItem } from '../utils/storage';
+import storageEnums from '../enums/storage.enum';
 
 export type LoginBody = {
   broadKey: string;
@@ -23,7 +24,7 @@ const useAuth = () => {
   const authDispatch = useAuthDispatch();
   const loginMutation = useMutation(loginUser, {
     onSuccess: (data: LoginBody) => {
-      setItem('api_credentials', {
+      setItem(storageEnums.API_CREDENTIALS, {
         ...data,
       });
       authDispatch({
@@ -35,7 +36,13 @@ const useAuth = () => {
     },
   });
 
-  return { loginMutation };
+  const logoutUser = () => {
+    authDispatch({
+      type: 'CLEAR_STATE',
+    });
+  };
+
+  return { loginMutation, logoutUser };
 };
 
 const useAuthState = () => {
