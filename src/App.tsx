@@ -6,16 +6,19 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AppProvider } from './stores/AppStore';
 import ConnectionChecker from './layouts/ConnectionChecker';
+import { AuthProvider } from './stores/AuthStore';
 
 function App() {
   return (
     <ThemeProvider theme={theme}>
       <QueryClientProvider client={new QueryClient({})}>
         <AppProvider>
-          <ConnectionChecker>
-            <Routing />
-          </ConnectionChecker>
-          <ReactQueryDevtools initialIsOpen={false} />
+          <AuthProvider>
+            <ConnectionChecker>
+              <Routing />
+            </ConnectionChecker>
+            <ReactQueryDevtools initialIsOpen={false} />
+          </AuthProvider>
         </AppProvider>
       </QueryClientProvider>
     </ThemeProvider>
