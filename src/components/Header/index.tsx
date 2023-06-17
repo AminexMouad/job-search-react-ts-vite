@@ -1,20 +1,11 @@
-import { Box, SxProps, Typography, useTheme } from '@mui/material';
+import { Box, SxProps } from '@mui/material';
 import React from 'react';
+import BrandLogo from '../Logo';
 
 const Header: React.FC = () => {
-  const theme = useTheme();
   return (
     <Box sx={styles.container}>
-      <Typography sx={styles.logoContainer}>
-        <Typography
-          sx={{ ...styles.logoText, color: theme.palette.primary.main }}>
-          Job
-        </Typography>
-        <Typography
-          sx={{ ...styles.logoText, color: theme.palette.secondary.main }}>
-          Finder
-        </Typography>
-      </Typography>
+      <BrandLogo />
     </Box>
   );
 };
@@ -27,14 +18,6 @@ const styles = {
     p: '0 20px',
     borderBottom: '1px solid #dadadac9',
   } as SxProps,
-
-  logoContainer: {
-    display: 'flex',
-  } as SxProps,
-  logoText: {
-    fontSize: '25px',
-    fontWeight: 600,
-  },
 };
 
 export default Header;
