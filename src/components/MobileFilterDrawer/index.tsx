@@ -1,9 +1,10 @@
 import MenuOpenIcon from '@mui/icons-material/MenuOpen';
 import { Box, Button, Drawer, SxProps, Typography } from '@mui/material';
-import React from 'react';
+import React, { useEffect } from 'react';
 import theme from '../../theme/theme';
 import { ITag } from '../../interfaces/job.interface';
 import FiltersForm from '../FiltersForm';
+import useResponsive from '../../hooks/useResponsive';
 
 interface MobileFilterDrawerProps {
   state: boolean;
@@ -15,6 +16,14 @@ const MobileFilterDrawer: React.FC<MobileFilterDrawerProps> = ({
   state,
   closeDrawer,
 }) => {
+  const { isMobile } = useResponsive();
+  useEffect(() => {
+    if (!isMobile && state) {
+      closeDrawer();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isMobile, state]);
+
   return (
     <Drawer
       anchor={'left'}
@@ -27,8 +36,8 @@ const MobileFilterDrawer: React.FC<MobileFilterDrawerProps> = ({
           <Typography
             variant='h5'
             fontWeight={500}
-            color={theme.palette.primary.main}>
-            Filters
+            color={theme.palette.secondary.main}>
+            Job filter options
           </Typography>
           <Button onClick={closeDrawer}>
             <MenuOpenIcon
@@ -54,6 +63,7 @@ const styles = {
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
+    mb: '30px',
   } as SxProps,
   formContainer: {} as SxProps,
 };
