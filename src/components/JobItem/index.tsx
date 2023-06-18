@@ -28,6 +28,12 @@ const JobItem: React.FC<JobItemProps> = ({ job }) => {
     return null;
   }, [job]);
 
+  const JobCategory = useMemo(() => {
+    const categoryNameType = /Category/i;
+    const category = job.tags.find((tag) => categoryNameType.test(tag.name));
+    return category;
+  }, [job.tags]);
+
   return (
     <Accordion>
       <AccordionSummary>
@@ -35,11 +41,14 @@ const JobItem: React.FC<JobItemProps> = ({ job }) => {
           <Box>
             <Typography sx={styles.jobName} variant='h6'>
               {job.name}
+              <Typography>{JobCategory?.value}</Typography>
             </Typography>
+
             <Typography
               variant='subtitle1'
               color={theme.palette.secondary.main}>
-              {job.location.text} - Posted {moment(job.created_at).fromNow()}
+              {job.location.text} - Posted{' '}
+              {moment(job.created_at).format('DD/MM/YYYY HH:mm')}
             </Typography>
           </Box>
           <Box>
