@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Box, Container, Pagination, SxProps } from '@mui/material';
 import JobItem from '../components/JobItem';
 import useJobs from '../hooks/useJobs';
@@ -6,19 +6,11 @@ import Loader from '../components/Loader';
 import GenericComponentState from '../components/Generic';
 import Header from '../components/Header';
 import MobileFilterDrawer from '../components/MobileFilterDrawer';
-import { IJobFilters } from '../interfaces/filters.interface';
 import { useAppState } from '../hooks/useApp';
 
 const HomePage: React.FC = () => {
   const [openDrawer, setOpenDrawer] = useState(false);
-  const [filters, setFilters] = useState<IJobFilters>();
-  const { filterOptions } = useAppState();
-
-  useEffect(() => {
-    if (filterOptions) {
-      setFilters(filterOptions);
-    }
-  }, [filterOptions]);
+  const { filters, jobCategories } = useAppState();
 
   const {
     joblist,
@@ -28,8 +20,7 @@ const HomePage: React.FC = () => {
     currentPage,
     setCurrentPage,
     preparedJobList,
-    jobCategories,
-  } = useJobs({ shouldFilterJobs: true, filters, setFilters });
+  } = useJobs({ shouldFilterJobs: true });
 
   return (
     <React.Fragment>
@@ -64,8 +55,6 @@ const HomePage: React.FC = () => {
       <MobileFilterDrawer
         state={openDrawer}
         closeDrawer={() => setOpenDrawer(!openDrawer)}
-        filters={filters}
-        setFilters={setFilters}
         jobCategories={jobCategories}
       />
     </React.Fragment>

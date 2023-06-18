@@ -1,7 +1,9 @@
 import { IJobFilters } from '../filters.interface';
+import { ITag } from '../job.interface';
 
 export interface IAppState {
   isAppOnline: boolean;
   dataRetrievedFromStorage: boolean;
-  filterOptions: IJobFilters;
+  filters: IJobFilters;
+  jobCategories: ITag[];
 }

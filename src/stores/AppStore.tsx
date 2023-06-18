@@ -7,7 +7,8 @@ import IAction, {
 const initialState: IAppState = {
   isAppOnline: true,
   dataRetrievedFromStorage: false,
-  filterOptions: {},
+  filters: {},
+  jobCategories: [],
 };
 
 const AppStateContext = createContext(initialState);

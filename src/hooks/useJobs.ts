@@ -3,12 +3,13 @@ import axios, { AxiosError } from 'axios';
 import { QueryKeys } from '../enums/react-query.enum';
 import { useQuery } from '@tanstack/react-query';
 import { IHttpResponse } from '../interfaces/httpResponse.interface';
-import { useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { getItem } from '../utils/storage';
-import { IJobFilters } from '../interfaces/filters.interface';
-import { IJob, ITag } from '../interfaces/job.interface';
+import { IJob } from '../interfaces/job.interface';
 import getCategoryTypeFromTags from '../utils/getCategoryTypeFromTags';
 import { sortJobs } from '../utils/jobFilters';
+import { useAppDispatch, useAppState } from './useApp';
+import { IAppState } from '../interfaces/stores/appStore.interface';
 
 const fetchJobs = async ({ page }: { page: number }) => {
   const credentials: { apiKey: string; broadKey: string } =
@@ -32,14 +33,12 @@ const fetchJobs = async ({ page }: { page: number }) => {
 
 const useJobs = ({
   shouldFilterJobs = true,
-  filters,
-  setFilters,
 }: {
   shouldFilterJobs?: boolean;
-  filters?: IJobFilters;
-  setFilters?: React.Dispatch<React.SetStateAction<IJobFilters | undefined>>;
 }) => {
   const [currentPage, setCurrentPage] = useState<number>(1);
+  const { filters } = useAppState();
+  const appDispatch = useAppDispatch();
 
   const {
     data: joblist,
@@ -118,7 +117,7 @@ const useJobs = ({
     }
   }, [joblist?.data.jobs, filters]);
 
-  const jobCategories: ITag[] = useMemo(() => {
+  const getJobCategories = useCallback(() => {
     if (joblist && joblist?.data.jobs.length > 0) {
       const jobs = joblist?.data.jobs;
 
@@ -136,11 +135,18 @@ const useJobs = ({
         })
         .filter((cat) => cat !== undefined);
 
-      return withoutDuplicated;
-    } else {
-      return [];
+      appDispatch({
+        type: 'SET_STATE',
+        payload: {
+          jobCategories: withoutDuplicated,
+        } as IAppState,
+      });
     }
-  }, [joblist]);
+  }, [appDispatch, joblist]);
+
+  useEffect(() => {
+    getJobCategories();
+  }, [getJobCategories]);
 
   return {
     joblist,
@@ -149,10 +155,7 @@ const useJobs = ({
     refetchJob,
     currentPage,
     setCurrentPage,
-    setFilters,
-    filters,
     preparedJobList,
-    jobCategories,
   };
 };
 
