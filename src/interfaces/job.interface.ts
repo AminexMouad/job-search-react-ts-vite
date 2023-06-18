@@ -84,4 +84,12 @@ export interface IJob {
   metadatas: [];
   ranges_float: [];
   ranges_date: IRangeDate[];
+
+  /* 
+    the property below will fix the error it happens when I tried to copy all IJob properties into the filtredJob which is having the value of the object variable preparedFiltredJob
+    "Element implicitly has an 'any' type because expression of type 'string' can't be  used to index type 'IJob'.
+    check this link : [filtredJob[key] = job[key];](https://github.com/AminexMouad/job-search-react-ts-vite/blob/0127858fc8e1e33b8669165e36c944571fe71a7b/src/hooks/useJobs.ts#L85)
+  */
+
+  [key: string]: any;
 }
