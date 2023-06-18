@@ -7,11 +7,14 @@ import GenericComponentState from '../components/Generic';
 import Header from '../components/Header';
 import MobileFilterDrawer from '../components/MobileFilterDrawer';
 import { useAppState } from '../hooks/useApp';
+import FiltersForm from '../components/FiltersForm';
+import useResponsive from '../hooks/useResponsive';
 
 const HomePage: React.FC = () => {
   const [openDrawer, setOpenDrawer] = useState(false);
-  const { filters, jobCategories } = useAppState();
 
+  const { filters, jobCategories } = useAppState();
+  const { isMobile } = useResponsive();
   const {
     joblist,
     isLoadingJobList,
@@ -33,22 +36,32 @@ const HomePage: React.FC = () => {
             error={jobListError}
             noData={preparedJobList?.length === 0}
             refetch={refetchJob}>
+            {!isMobile && (
+              <Box>
+                <FiltersForm />
+              </Box>
+            )}
+
             <Box sx={styles.listContainer}>
               {preparedJobList?.map((job) => (
                 <JobItem key={job.id} job={job} />
               ))}
             </Box>
-            {joblist?.data && joblist?.data?.jobs.length > 0 && !filters && (
-              <Box sx={styles.paginationContainer}>
-                <Pagination
-                  defaultPage={currentPage}
-                  page={currentPage}
-                  onChange={(_, page) => setCurrentPage(page)}
-                  count={joblist.meta.maxPage || 0}
-                  color='primary'
-                />
-              </Box>
-            )}
+
+            {joblist?.data &&
+              joblist?.data?.jobs.length > 0 &&
+              filters &&
+              Object.keys(filters).length === 0 && (
+                <Box sx={styles.paginationContainer}>
+                  <Pagination
+                    defaultPage={currentPage}
+                    page={currentPage}
+                    onChange={(_, page) => setCurrentPage(page)}
+                    count={joblist.meta.maxPage || 0}
+                    color='primary'
+                  />
+                </Box>
+              )}
           </GenericComponentState>
         )}
       </Container>
@@ -66,11 +79,12 @@ const styles = {
     display: 'flex',
     flexDirection: 'column',
     gap: '10px',
-    m: '20px 0',
+    m: '40px 0',
   } as SxProps,
   paginationContainer: {
     display: 'flex',
     justifyContent: 'center',
+    m: '30px 0',
   } as SxProps,
 };
 
