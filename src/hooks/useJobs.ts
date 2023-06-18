@@ -7,6 +7,8 @@ import { useMemo, useState } from 'react';
 import { getItem } from '../utils/storage';
 import { IJobFilters } from '../interfaces/filters.interface';
 import { IJob, ITag } from '../interfaces/job.interface';
+import getCategoryTypeFromTags from '../utils/getCategoryTypeFromTags';
+import { sortJobs } from '../utils/jobFilters';
 
 const fetchJobs = async ({ page }: { page: number }) => {
   const credentials: { apiKey: string; broadKey: string } =
@@ -16,7 +18,7 @@ const fetchJobs = async ({ page }: { page: number }) => {
     params: {
       board_keys: `["${credentials.broadKey}"]`,
       limit: 10,
-      order_by: 'desc',
+      order_by: 'asc',
       page: page,
     },
 
@@ -56,7 +58,7 @@ const useJobs = ({
   );
 
   const preparedJobList = useMemo(() => {
-    const jobs = joblist?.data.jobs;
+    const jobs = joblist?.data.jobs || [];
 
     if (filters) {
       let preparedFiltredJob: object = {};
@@ -72,32 +74,44 @@ const useJobs = ({
               },
             ],
           };
-        } else {
+        } else if (key !== 'sortBy') {
           preparedFiltredJob = { ...preparedFiltredJob, [key]: value };
         }
       }
 
-      const filtredJobs = jobs?.filter((job) => {
-        const filtredJob = preparedFiltredJob as IJob;
+      let filtredJobs: IJob[];
+      if (filters.category || filters.name) {
+        filtredJobs = jobs?.filter((job) => {
+          const filtredJob = preparedFiltredJob as IJob;
 
-        for (const key in job) {
-          if (!filtredJob[key] && key !== 'name') {
-            filtredJob[key] = job[key];
+          for (const key in job) {
+            if (!filtredJob[key] && key !== 'name') {
+              filtredJob[key] = job[key];
+            }
           }
-        }
 
-        const searchedName = new RegExp(filtredJob.name, 'i');
-        const hasSameCategory = job.tags.find(
-          (tag) => tag.value === filtredJob.tags[0].value
-        );
+          const searchedName = new RegExp(filtredJob.name, 'i');
+          const hasSameCategory = job.tags.find(
+            (tag) => tag.value === filtredJob.tags[0].value
+          );
 
-        if (searchedName.test(job.name) && hasSameCategory) {
-          return true;
+          if (searchedName.test(job.name) && hasSameCategory) {
+            return true;
+          } else {
+            return false;
+          }
+        });
+      } else {
+        filtredJobs = jobs;
+      }
+
+      if (filters.sortBy) {
+        if (!filtredJobs) {
+          return sortJobs(filtredJobs, filters.sortBy);
         } else {
-          return false;
+          sortJobs(jobs, filters.sortBy);
         }
-      });
-
+      }
       return filtredJobs;
     } else {
       return jobs;
@@ -109,10 +123,7 @@ const useJobs = ({
       const jobs = joblist?.data.jobs;
 
       const categories = jobs?.map((job) => {
-        const categoryNameType = /Category/i;
-        const category = job.tags.find((tag) =>
-          categoryNameType.test(tag.name)
-        );
+        const category = getCategoryTypeFromTags(job.tags);
 
         if (category !== undefined) {
           return JSON.stringify(category);

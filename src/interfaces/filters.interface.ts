@@ -1,4 +1,4 @@
-type jobFilterSortByType = 'created_at' | 'name' | 'category';
+export type jobFilterSortByType = 'created_at' | 'name' | 'category';
 
 export interface IJobFilters {
   name?: string | undefined;

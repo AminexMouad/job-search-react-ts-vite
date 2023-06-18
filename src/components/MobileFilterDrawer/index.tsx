@@ -1,13 +1,13 @@
 import {
   Box,
   Button,
-  Checkbox,
   Drawer,
   FormControl,
   FormControlLabel,
-  FormGroup,
   InputLabel,
   MenuItem,
+  Radio,
+  RadioGroup,
   Select,
   SxProps,
   TextField,
@@ -20,7 +20,10 @@ import theme from '../../theme/theme';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
-import { IJobFilters } from '../../interfaces/filters.interface';
+import {
+  IJobFilters,
+  jobFilterSortByType,
+} from '../../interfaces/filters.interface';
 import { ITag } from '../../interfaces/job.interface';
 
 interface MobileFilterDrawerProps {
@@ -30,6 +33,21 @@ interface MobileFilterDrawerProps {
   setFilters: React.Dispatch<React.SetStateAction<IJobFilters | undefined>>;
   jobCategories: ITag[];
 }
+
+const sortByItems = [
+  {
+    label: 'Newest postions',
+    value: 'created_at',
+  },
+  {
+    label: 'Name',
+    value: 'name',
+  },
+  {
+    label: 'Category',
+    value: 'category',
+  },
+];
 
 const MobileFilterDrawer: React.FC<MobileFilterDrawerProps> = ({
   state,
@@ -41,13 +59,10 @@ const MobileFilterDrawer: React.FC<MobileFilterDrawerProps> = ({
   const validationSchema = yup.object({
     name: yup.string(),
     category: yup.string(),
-    sortBy: yup.string().oneOf(['created_at', 'name', 'category']),
+    sortBy: yup.string().nullable(),
   });
 
-  const { register, handleSubmit, reset } = useForm({
-    defaultValues: {
-      name: '',
-    },
+  const { register, handleSubmit, reset, watch } = useForm({
     resolver: yupResolver(validationSchema),
     reValidateMode: 'onChange',
   });
@@ -55,13 +70,15 @@ const MobileFilterDrawer: React.FC<MobileFilterDrawerProps> = ({
   const onSubmit = (values: {
     name: string;
     category: string;
-    sortBy: string;
+    sortBy: jobFilterSortByType;
   }) => {
-    const { name, category } = values;
+    const { name, category, sortBy } = values;
+
     if (values) {
       setFilters({
         ...(name && { name }),
         ...(category && { category: category }),
+        ...(sortBy && { sortBy }),
       });
     }
 
@@ -124,14 +141,17 @@ const MobileFilterDrawer: React.FC<MobileFilterDrawerProps> = ({
             <Typography variant='h6' color={theme.palette.primary.main}>
               Sort by:
             </Typography>
-            <FormGroup>
-              <FormControlLabel
-                control={<Checkbox defaultChecked />}
-                label='Oldest postions'
-              />
-              <FormControlLabel control={<Checkbox />} label='Name' />
-              <FormControlLabel control={<Checkbox />} label='Category' />
-            </FormGroup>
+
+            <RadioGroup defaultValue={watch('sortBy') || ''}>
+              {sortByItems.map((item, index) => (
+                <FormControlLabel
+                  key={index}
+                  value={item.value}
+                  control={<Radio {...register('sortBy')} />}
+                  label={item.label}
+                />
+              ))}
+            </RadioGroup>
           </Box>
           <Button
             variant='contained'

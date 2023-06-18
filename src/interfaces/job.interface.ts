@@ -45,7 +45,7 @@ export interface IRangeDate {
 
 export interface ILanguage {
   name: string;
-  value: string;
+  value: string | null;
 }
 
 export interface ISection {
@@ -57,7 +57,7 @@ export interface ISection {
 export interface IJob {
   id: number;
   key: string;
-  reference: string;
+  reference: string | null;
   board_key: string;
   board: IBoard;
   name: string;
