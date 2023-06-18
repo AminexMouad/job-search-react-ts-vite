@@ -57,6 +57,11 @@ const FiltersForm: React.FC<FiltersFormProps> = ({ closeDrawer }) => {
   const { register, handleSubmit, watch, reset } = useForm({
     resolver: yupResolver(validationSchema),
     reValidateMode: 'onChange',
+    defaultValues: {
+      name: filters.name,
+      category: filters.category,
+      sortBy: filters.sortBy,
+    },
   });
 
   const onSubmit = (values: {
