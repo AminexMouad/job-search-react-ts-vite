@@ -1,11 +1,17 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Box, Container, Pagination, SxProps } from '@mui/material';
 import JobItem from '../components/JobItem';
 import useJobs from '../hooks/useJobs';
 import Loader from '../components/Loader';
 import GenericComponentState from '../components/Generic';
+import Header from '../components/Header';
+import MobileFilterDrawer from '../components/MobileFilterDrawer';
+import { IJobFilters } from '../interfaces/filters.interface';
 
 const HomePage: React.FC = () => {
+  const [openDrawer, setOpenDrawer] = useState(false);
+  const [filters, setFilters] = useState<IJobFilters>();
+
   const {
     joblist,
     isLoadingJobList,
@@ -13,36 +19,48 @@ const HomePage: React.FC = () => {
     refetchJob,
     currentPage,
     setCurrentPage,
-  } = useJobs();
+    preparedJobList,
+    jobCategories,
+  } = useJobs({ shouldFilterJobs: true, filters, setFilters });
 
   return (
-    <Container>
-      {isLoadingJobList ? (
-        <Loader />
-      ) : (
-        <GenericComponentState
-          error={jobListError}
-          noData={joblist?.data.jobs.length === 0}
-          refetch={refetchJob}>
-          <Box sx={styles.listContainer}>
-            {joblist?.data.jobs.map((job) => (
-              <JobItem key={job.id} job={job} />
-            ))}
-          </Box>
-          {joblist?.data && joblist?.data?.jobs.length > 0 && (
-            <Box sx={styles.paginationContainer}>
-              <Pagination
-                defaultPage={currentPage}
-                page={currentPage}
-                onChange={(_, page) => setCurrentPage(page)}
-                count={joblist.meta.maxPage || 0}
-                color='primary'
-              />
+    <React.Fragment>
+      <Header openDrawer={() => setOpenDrawer(true)} />
+      <Container>
+        {isLoadingJobList ? (
+          <Loader />
+        ) : (
+          <GenericComponentState
+            error={jobListError}
+            noData={preparedJobList?.length === 0}
+            refetch={refetchJob}>
+            <Box sx={styles.listContainer}>
+              {preparedJobList?.map((job) => (
+                <JobItem key={job.id} job={job} />
+              ))}
             </Box>
-          )}
-        </GenericComponentState>
-      )}
-    </Container>
+            {joblist?.data && joblist?.data?.jobs.length > 0 && !filters && (
+              <Box sx={styles.paginationContainer}>
+                <Pagination
+                  defaultPage={currentPage}
+                  page={currentPage}
+                  onChange={(_, page) => setCurrentPage(page)}
+                  count={joblist.meta.maxPage || 0}
+                  color='primary'
+                />
+              </Box>
+            )}
+          </GenericComponentState>
+        )}
+      </Container>
+      <MobileFilterDrawer
+        state={openDrawer}
+        closeDrawer={() => setOpenDrawer(!openDrawer)}
+        filters={filters}
+        setFilters={setFilters}
+        jobCategories={jobCategories}
+      />
+    </React.Fragment>
   );
 };
 

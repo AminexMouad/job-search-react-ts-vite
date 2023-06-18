@@ -40,10 +40,13 @@ const GenericComponentState: React.FC<GenericComponentStateProps> = ({
           }}
         />
 
-        <Typography variant='h3' color={theme.palette.error.main}>
+        <Typography variant='h4' color={theme.palette.error.main}>
           {relevantMessage.title}
         </Typography>
-        <Typography variant='h5' color={theme.palette.secondary.main}>
+        <Typography
+          variant='h6'
+          textAlign={'center'}
+          color={theme.palette.secondary.main}>
           {relevantMessage.subtitle}
         </Typography>
         {error && (
