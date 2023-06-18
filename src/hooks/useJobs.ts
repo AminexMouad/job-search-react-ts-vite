@@ -7,7 +7,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { getItem } from '../utils/storage';
 import { IJob } from '../interfaces/job.interface';
 import getCategoryTypeFromTags from '../utils/getCategoryTypeFromTags';
-import { sortJobs } from '../utils/jobFilters';
+import { getOnlyRelevantJobs, sortJobs } from '../utils/jobFilters';
 import { useAppDispatch, useAppState } from './useApp';
 import { IAppState } from '../interfaces/stores/appStore.interface';
 
@@ -80,26 +80,9 @@ const useJobs = ({
 
       let filtredJobs: IJob[];
       if (filters.category || filters.name) {
-        filtredJobs = jobs?.filter((job) => {
-          const filtredJob = preparedFiltredJob as IJob;
+        filtredJobs = getOnlyRelevantJobs(jobs, preparedFiltredJob);
 
-          for (const key in job) {
-            if (!filtredJob[key] && key !== 'name') {
-              filtredJob[key] = job[key];
-            }
-          }
-
-          const searchedName = new RegExp(filtredJob.name, 'i');
-          const hasSameCategory = job.tags.find(
-            (tag) => tag.value === filtredJob.tags[0].value
-          );
-
-          if (searchedName.test(job.name) && hasSameCategory) {
-            return true;
-          } else {
-            return false;
-          }
-        });
+        return filtredJobs;
       } else {
         filtredJobs = jobs;
       }

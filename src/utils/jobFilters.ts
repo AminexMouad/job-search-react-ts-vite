@@ -19,3 +19,41 @@ export const sortJobs = (jobs: IJob[], sortBy: jobFilterSortByType) => {
     }
   });
 };
+
+export const addOnlyMissingPropertiesToJobFilterObject = (
+  jobFilter: object,
+  job: IJob
+) => {
+  const filtredJob = { ...jobFilter } as IJob;
+
+  for (const key in job) {
+    if (!filtredJob[key] && key !== 'name') {
+      filtredJob[key] = job[key];
+    }
+  }
+
+  return filtredJob;
+};
+
+export const getOnlyRelevantJobs = (jobs: IJob[], filters: object) => {
+  const filtredJobs = jobs?.filter((job) => {
+    const filtredJob = addOnlyMissingPropertiesToJobFilterObject(filters, job);
+
+    const searchedName = new RegExp(filtredJob.name, 'i');
+
+    const hasSameCategory = job.tags.find((tag) => {
+      return (
+        tag.value ===
+        filtredJob.tags[filtredJob?.tags?.length == 3 ? 2 : 0].value
+      );
+    });
+
+    if (searchedName.test(job.name) && hasSameCategory) {
+      return true;
+    } else {
+      return false;
+    }
+  });
+
+  return filtredJobs;
+};
