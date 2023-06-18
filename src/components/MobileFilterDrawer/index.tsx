@@ -110,7 +110,8 @@ const MobileFilterDrawer: React.FC<MobileFilterDrawerProps> = ({
               <Select
                 labelId='category'
                 label='Filter by category'
-                {...register('category')}>
+                {...register('category')}
+                defaultValue={filters?.category}>
                 {jobCategories.map((category, index) => (
                   <MenuItem key={index} value={category.value}>
                     {category.value}
