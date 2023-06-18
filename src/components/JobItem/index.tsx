@@ -14,6 +14,7 @@ import { IJob } from '../../interfaces/job.interface';
 import moment from 'moment';
 import JobInfo from './JobInfo';
 import Tag from '../Tag';
+import getCategoryTypeFromTags from '../../utils/getCategoryTypeFromTags';
 
 interface JobItemProps {
   job: IJob;
@@ -28,11 +29,10 @@ const JobItem: React.FC<JobItemProps> = ({ job }) => {
     return null;
   }, [job]);
 
-  const JobCategory = useMemo(() => {
-    const categoryNameType = /Category/i;
-    const category = job.tags.find((tag) => categoryNameType.test(tag.name));
-    return category;
-  }, [job.tags]);
+  const JobCategory = useMemo(
+    () => getCategoryTypeFromTags(job.tags),
+    [job.tags]
+  );
 
   return (
     <Accordion>
@@ -41,14 +41,16 @@ const JobItem: React.FC<JobItemProps> = ({ job }) => {
           <Box>
             <Typography sx={styles.jobName} variant='h6'>
               {job.name}
-              <Typography>{JobCategory?.value}</Typography>
+              {JobCategory && <Typography>{JobCategory?.value}</Typography>}
             </Typography>
 
             <Typography
               variant='subtitle1'
               color={theme.palette.secondary.main}>
               {job.location.text} - Posted{' '}
-              {moment(job.created_at).format('DD/MM/YYYY HH:mm')}
+              {moment(job.created_at).format('DD/MM/YYYY HH:mm') +
+                ' - ' +
+                moment(job.created_at).fromNow()}
             </Typography>
           </Box>
           <Box>
