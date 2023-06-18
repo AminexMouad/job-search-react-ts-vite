@@ -10,6 +10,8 @@ const useLoadDataFromStorage = () => {
 
   const retrieveDatasFromStorage = useCallback(() => {
     const credentials = getItem(StorageEnums.API_CREDENTIALS);
+    const filterOptions = getItem(StorageEnums.FILTER_OPTIONS);
+
     if (credentials) {
       authDispatch({
         type: 'SET_STATE_FROM_STORAGE',
@@ -19,6 +21,7 @@ const useLoadDataFromStorage = () => {
       type: 'SET_STATE',
       payload: {
         dataRetrievedFromStorage: true,
+        filterOptions,
       },
     });
   }, [appDispatch, authDispatch]);

@@ -25,6 +25,8 @@ import {
   jobFilterSortByType,
 } from '../../interfaces/filters.interface';
 import { ITag } from '../../interfaces/job.interface';
+import { removeItem, setItem } from '../../utils/storage';
+import StorageEnums from '../../enums/storage.enum';
 
 interface MobileFilterDrawerProps {
   state: boolean;
@@ -73,15 +75,22 @@ const MobileFilterDrawer: React.FC<MobileFilterDrawerProps> = ({
     sortBy: jobFilterSortByType;
   }) => {
     const { name, category, sortBy } = values;
-
+    const preparedFilters = {
+      ...(name && { name }),
+      ...(category && { category: category }),
+      ...(sortBy && { sortBy }),
+    };
     if (values) {
-      setFilters({
-        ...(name && { name }),
-        ...(category && { category: category }),
-        ...(sortBy && { sortBy }),
-      });
+      setFilters(preparedFilters);
     }
+    setItem(StorageEnums.FILTER_OPTIONS, preparedFilters);
+    closeDrawer();
+  };
 
+  const onResetFilters = () => {
+    setFilters(undefined);
+    removeItem(StorageEnums.FILTER_OPTIONS);
+    reset();
     closeDrawer();
   };
 
@@ -166,11 +175,7 @@ const MobileFilterDrawer: React.FC<MobileFilterDrawerProps> = ({
             <Button
               variant='outlined'
               fullWidth
-              onClick={() => {
-                setFilters(undefined);
-                reset();
-                closeDrawer();
-              }}
+              onClick={onResetFilters}
               sx={{
                 mt: '20px',
               }}>
