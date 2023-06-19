@@ -58,9 +58,9 @@ const FiltersForm: React.FC<FiltersFormProps> = ({ closeDrawer }) => {
     resolver: yupResolver(validationSchema),
     reValidateMode: 'onChange',
     defaultValues: {
-      name: filters.name,
-      category: filters.category,
-      sortBy: filters.sortBy,
+      name: filters?.name || '',
+      category: filters?.category || '',
+      sortBy: filters?.sortBy || '',
     },
   });
 
