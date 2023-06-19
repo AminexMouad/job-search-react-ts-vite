@@ -1,31 +1,28 @@
-import { API_KEY, BROAD_KEY } from './../config/env';
 import { useContext } from 'react';
 import { AuthDispatchContext, AuthStateContext } from '../stores/AuthStore';
 import { useMutation } from '@tanstack/react-query';
 import { setItem } from '../utils/storage';
 import storageEnums from '../enums/storage.enum';
+import { fetchJobs } from './useJobs';
 
 export type LoginBody = {
   broadKey: string;
   apiKey: string;
 };
 
-const loginUser = ({ broadKey, apiKey }: LoginBody) => {
-  return new Promise((resolve, reject) => {
-    if (API_KEY !== apiKey || BROAD_KEY !== broadKey) {
-      reject(new Error('Credentials are incorrect'));
-    } else {
-      resolve({ apiKey, broadKey });
-    }
+const loginUser = async ({ broadKey, apiKey }: LoginBody) => {
+  return await fetchJobs({
+    broadKey,
+    apiKey,
   });
 };
 
 const useAuth = () => {
   const authDispatch = useAuthDispatch();
   const loginMutation = useMutation(loginUser, {
-    onSuccess: (data: LoginBody) => {
+    onSuccess: (_, body) => {
       setItem(storageEnums.API_CREDENTIALS, {
-        ...data,
+        ...body,
       });
       authDispatch({
         type: 'SET_STATE',

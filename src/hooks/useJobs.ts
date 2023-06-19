@@ -11,20 +11,32 @@ import { getOnlyRelevantJobs, sortJobs } from '../utils/jobFilters';
 import { useAppDispatch, useAppState } from './useApp';
 import { IAppState } from '../interfaces/stores/appStore.interface';
 
-const fetchJobs = async ({ page }: { page: number }) => {
+export const fetchJobs = async ({
+  page,
+  apiKey,
+  broadKey,
+}: {
+  page?: number;
+  apiKey?: string;
+  broadKey?: string;
+}) => {
   const credentials: { apiKey: string; broadKey: string } =
     getItem('api_credentials');
 
+  const preparedApiKey = apiKey || credentials.apiKey;
+
+  const preparedBroadKey = broadKey || credentials.broadKey;
+
   const res = await axios.get('https://api.hrflow.ai/v1/jobs/searching', {
     params: {
-      board_keys: `["${credentials.broadKey}"]`,
+      board_keys: `["${preparedBroadKey}"]`,
       limit: 10,
       order_by: 'asc',
-      page: page,
+      page: page || 1,
     },
 
     headers: {
-      'X-API-KEY': credentials.apiKey,
+      'X-API-KEY': preparedApiKey,
     },
   });
 

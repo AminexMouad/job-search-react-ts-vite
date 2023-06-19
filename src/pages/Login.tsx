@@ -9,7 +9,6 @@ import * as yup from 'yup';
 
 import BrandLogo from '../components/Logo';
 import { useAuth, LoginBody } from '../hooks/useAuth';
-import { AxiosError } from 'axios';
 
 const Login: React.FC = () => {
   const navigate = useNavigate();
@@ -20,8 +19,6 @@ const Login: React.FC = () => {
   });
 
   const { loginMutation } = useAuth();
-
-  const errorResponse = loginMutation.error as AxiosError;
 
   const {
     register,
@@ -74,7 +71,7 @@ const Login: React.FC = () => {
             helperText={errors.apiKey?.message}
           />
           <Typography sx={styles.errorText}>
-            {loginMutation.isError && errorResponse.message}
+            {loginMutation.isError && 'Broad key or API key are incorrect'}
           </Typography>
           <LoadingButton
             fullWidth
