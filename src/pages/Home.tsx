@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Box, Container, Pagination, SxProps } from '@mui/material';
 import JobItem from '../components/JobItem';
 import useJobs from '../hooks/useJobs';
@@ -9,9 +9,11 @@ import MobileFilterDrawer from '../components/MobileFilterDrawer';
 import { useAppState } from '../hooks/useApp';
 import FiltersForm from '../components/FiltersForm';
 import useResponsive from '../hooks/useResponsive';
+import { IJob } from '../interfaces/job.interface';
 
 const HomePage: React.FC = () => {
   const [openDrawer, setOpenDrawer] = useState(false);
+  const [reOrderedJobs, setReOrderedJobs] = useState<IJob[]>([]);
 
   const { filters, jobCategories } = useAppState();
   const { isMobile } = useResponsive();
@@ -24,6 +26,32 @@ const HomePage: React.FC = () => {
     setCurrentPage,
     preparedJobList,
   } = useJobs({ shouldFilterJobs: true });
+
+  const preparedJobForReOrder = useMemo(() => {
+    if (
+      reOrderedJobs.length > 0 &&
+      (!filters || Object.keys(filters).length === 0)
+    ) {
+      return reOrderedJobs;
+    } else {
+      return preparedJobList;
+    }
+  }, [reOrderedJobs, filters, preparedJobList]);
+
+  const onDrop = (event: React.DragEvent<HTMLDivElement>, index: number) => {
+    const draggedIndex: number = parseInt(
+      event.dataTransfer.getData('text/plain')
+    );
+    const newJobItemsOrder = [...preparedJobForReOrder];
+
+    const newOrderedItems = Array.from(newJobItemsOrder);
+    [newOrderedItems[draggedIndex], newOrderedItems[index]] = [
+      newOrderedItems[index],
+      newOrderedItems[draggedIndex],
+    ];
+
+    setReOrderedJobs(newOrderedItems);
+  };
 
   return (
     <React.Fragment>
@@ -43,20 +71,31 @@ const HomePage: React.FC = () => {
             )}
 
             <Box sx={styles.listContainer}>
-              {preparedJobList?.map((job) => (
-                <JobItem key={job.id} job={job} />
+              {preparedJobForReOrder?.map((job, index: number) => (
+                <div
+                  key={index}
+                  draggable
+                  onDragStart={(e) => {
+                    e.dataTransfer.setData('Text', index.toString());
+                  }}
+                  onDragOver={(e) => {
+                    e.preventDefault();
+                  }}
+                  onDrop={(e) => onDrop(e, index)}>
+                  <JobItem job={job} />
+                </div>
               ))}
             </Box>
-
-            {joblist?.data &&
-              joblist?.data?.jobs.length > 0 &&
-              filters &&
-              Object.keys(filters).length === 0 && (
+            {joblist &&
+              ((filters && Object.keys(filters).length === 0) || !filters) && (
                 <Box sx={styles.paginationContainer}>
                   <Pagination
                     defaultPage={currentPage}
                     page={currentPage}
-                    onChange={(_, page) => setCurrentPage(page)}
+                    onChange={(_, page) => {
+                      setCurrentPage(page);
+                      setReOrderedJobs([]);
+                    }}
                     count={joblist.meta.maxPage || 0}
                     color='primary'
                   />
