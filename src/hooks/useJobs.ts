@@ -69,7 +69,7 @@ const useJobs = ({
   );
 
   const preparedJobList = useMemo(() => {
-    const jobs = joblist?.data.jobs || [];
+    const jobs = joblist?.data.jobs ? [...joblist.data.jobs] : [];
 
     if (filters) {
       let preparedFiltredJob: object = {};
@@ -89,21 +89,18 @@ const useJobs = ({
           preparedFiltredJob = { ...preparedFiltredJob, [key]: value };
         }
       }
-
       let filtredJobs: IJob[];
       if (filters.category || filters.name) {
         filtredJobs = getOnlyRelevantJobs(jobs, preparedFiltredJob);
-
-        return filtredJobs;
       } else {
         filtredJobs = jobs;
       }
 
       if (filters.sortBy) {
         if (!filtredJobs) {
-          return sortJobs(filtredJobs, filters.sortBy);
+          return sortJobs(jobs, filters.sortBy);
         } else {
-          sortJobs(jobs, filters.sortBy);
+          sortJobs(filtredJobs, filters.sortBy);
         }
       }
       return filtredJobs;

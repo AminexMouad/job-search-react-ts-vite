@@ -23,6 +23,7 @@ import { removeItem, setItem } from '../../utils/storage';
 import { useAppDispatch, useAppState } from '../../hooks/useApp';
 import { IAppState } from '../../interfaces/stores/appStore.interface';
 import useResponsive from '../../hooks/useResponsive';
+import { ITag } from '../../interfaces/job.interface';
 
 const sortByItems = [
   {
@@ -50,29 +51,34 @@ const FiltersForm: React.FC<FiltersFormProps> = ({ closeDrawer }) => {
 
   const validationSchema = yup.object({
     name: yup.string(),
-    category: yup.string(),
+    category: yup.object({
+      name: yup.string().nullable(),
+      value: yup.string().nullable(),
+    }),
     sortBy: yup.string().nullable(),
   });
 
-  const { register, handleSubmit, watch, reset } = useForm({
+  const { register, handleSubmit, watch, setValue, reset } = useForm({
     resolver: yupResolver(validationSchema),
     reValidateMode: 'onChange',
     defaultValues: {
       name: filters?.name || '',
-      category: filters?.category || '',
+      category: filters?.category
+        ? jobCategories?.find((cat) => cat.value === filters?.category)
+        : null,
       sortBy: filters?.sortBy || '',
     },
   });
 
   const onSubmit = (values: {
     name: string;
-    category: string;
+    category: ITag;
     sortBy: jobFilterSortByType;
   }) => {
     const { name, category, sortBy } = values;
     const preparedFilters = {
       ...(name && { name }),
-      ...(category && { category: category }),
+      ...(category && { category: category.value }),
       ...(sortBy && { sortBy }),
     };
     if (values) {
@@ -92,7 +98,7 @@ const FiltersForm: React.FC<FiltersFormProps> = ({ closeDrawer }) => {
     appDispatch({
       type: 'SET_STATE',
       payload: {
-        filters: {},
+        filters: null,
       },
     });
     reset();
@@ -117,8 +123,16 @@ const FiltersForm: React.FC<FiltersFormProps> = ({ closeDrawer }) => {
               <Select
                 labelId='category'
                 label='Filter by category'
-                {...register('category')}
-                defaultValue={filters?.category}>
+                onChange={(e) => {
+                  const foundCategory = jobCategories.find(
+                    (cat) => cat.value === e.target.value
+                  );
+
+                  if (foundCategory) {
+                    setValue('category', foundCategory);
+                  }
+                }}
+                value={watch('category')?.value || null}>
                 {jobCategories.map((category, index) => (
                   <MenuItem key={index} value={category.value}>
                     {category.value}
@@ -133,12 +147,19 @@ const FiltersForm: React.FC<FiltersFormProps> = ({ closeDrawer }) => {
             Sort by:
           </Typography>
 
-          <RadioGroup defaultValue={watch('sortBy') || ''}>
+          <RadioGroup defaultValue={watch('sortBy') || undefined}>
             {sortByItems.map((item, index) => (
               <FormControlLabel
                 key={index}
                 value={item.value}
-                control={<Radio {...register('sortBy')} />}
+                control={
+                  <Radio
+                    {...register('sortBy')}
+                    checked={
+                      !watch('sortBy') ? false : watch('sortBy') === item.value
+                    }
+                  />
+                }
                 label={item.label}
               />
             ))}
