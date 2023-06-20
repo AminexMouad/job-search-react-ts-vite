@@ -51,10 +51,12 @@ const FiltersForm: React.FC<FiltersFormProps> = ({ closeDrawer }) => {
 
   const validationSchema = yup.object({
     name: yup.string(),
-    category: yup.object({
-      name: yup.string().nullable(),
-      value: yup.string().nullable(),
-    }),
+    category: yup
+      .object({
+        name: yup.string().nullable(),
+        value: yup.string().nullable(),
+      })
+      .nullable(),
     sortBy: yup.string().nullable(),
   });
 
